@@ -34,12 +34,6 @@ public class App
             {
                 BitcoindRpcClient.Block blocki = client.getBlock(i);
                 System.out.println( blocki.time().toString());
-
-                for(BitcoindRpcClient.RawTransaction tx : blocki.tx().stream().map(x->client.decodeRawTransaction(client.getRawTransactionHex(x))).collect(Collectors.toList()))
-                {
-                    System.out.println(tx.txId());
-                    System.out.println(tx.vOut().stream().map(x->x.scriptPubKey().type()).reduce("",String::concat));
-                }
             }
 
             BitcoindRpcClient.Block block4 = client.getBlock(834624);
@@ -48,6 +42,7 @@ public class App
             {
                 System.out.println(tx.txId());
                 System.out.println(tx.vOut().stream().map(x->x.scriptPubKey().type()).reduce("",String::concat));
+                System.out.println(tx.toString());
             }
 
             BitcoindRpcClient.RawTransaction transaction =client.decodeRawTransaction(client.getRawTransactionHex("8cd3ef3817b5e6a072a9803eafb041140e180936915c00b5aa22785cd6c46f77"));
