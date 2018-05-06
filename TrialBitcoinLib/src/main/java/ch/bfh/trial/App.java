@@ -1,5 +1,7 @@
 package ch.bfh.trial;
-import fr.acinq.bitcoin.*;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import wf.bitcoin.javabitcoindrpcclient.*;
 
 import java.net.URL;
@@ -14,10 +16,10 @@ public class App
     public static void main( String[] args )
     {
         System.out.println( "Hello World!" );
-
-        Block block = Block.LivenetGenesisBlock();
-        System.out.println(block.toString());
         try {
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+
             URL u = new URL("http://user:password@127.0.0.1:18332");
             System.out.println(u.getUserInfo());
             BitcoinJSONRPCClient client = new BitcoinJSONRPCClient(u);
@@ -33,22 +35,15 @@ public class App
             for(int i=client.getBlockCount()-20;i<=client.getBlockCount();i++)
             {
                 BitcoindRpcClient.Block blocki = client.getBlock(i);
-                System.out.println( blocki.time().toString());
+                System.out.println( gson.toJson(blocki));
+                System.out.println( gson.toJson(
+                        blocki.tx().stream().map(x->client.decodeRawTransaction(client.getRawTransactionHex(x))).collect(Collectors.toList())));
             }
 
             BitcoindRpcClient.Block block4 = client.getBlock(834624);
-            System.out.println(block4.toString());
-            for(BitcoindRpcClient.RawTransaction tx : block2.tx().stream().map(x->client.decodeRawTransaction(client.getRawTransactionHex(x))).collect(Collectors.toList()))
-            {
-                System.out.println(tx.txId());
-                System.out.println(tx.vOut().stream().map(x->x.scriptPubKey().type()).reduce("",String::concat));
-                System.out.println(tx.toString());
-            }
-
-            BitcoindRpcClient.RawTransaction transaction =client.decodeRawTransaction(client.getRawTransactionHex("8cd3ef3817b5e6a072a9803eafb041140e180936915c00b5aa22785cd6c46f77"));
-            System.out.println(transaction.toString());
-
-
+            System.out.println( gson.toJson(block4));
+            System.out.println( gson.toJson(
+                    block4.tx().stream().map(x->client.decodeRawTransaction(client.getRawTransactionHex(x))).collect(Collectors.toList())));
         }
         catch (Exception e){
             System.out.println(e.toString());
