@@ -32,12 +32,19 @@ public class App
             System.out.println(block3.toString());
 
             System.out.println(block3.time().toString());
-            for(int i=client.getBlockCount()-20;i<=client.getBlockCount();i++)
-            {
+            for(int i=54528;i<=54540;i++) {
                 BitcoindRpcClient.Block blocki = client.getBlock(i);
-                System.out.println( gson.toJson(blocki));
-                System.out.println( gson.toJson(
-                        blocki.tx().stream().map(x->client.decodeRawTransaction(client.getRawTransactionHex(x))).collect(Collectors.toList())));
+                System.out.println(gson.toJson(blocki));
+                for(String txs: blocki.tx()){
+                    System.out.println(txs);
+                    String txr=client.getRawTransactionHex(txs);
+                    if(!txr.contains("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"))
+                        continue;
+                    System.out.print("false");
+                    System.out.println(txr);
+                    BitcoindRpcClient.RawTransaction tx = client.decodeRawTransaction(txr);
+                    System.out.println(gson.toJson(tx));
+                }
             }
 
             BitcoindRpcClient.Block block4 = client.getBlock(834624);
